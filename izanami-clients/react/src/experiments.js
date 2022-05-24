@@ -219,14 +219,22 @@ export class ExperimentsProvider extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const newState = Object.assign({}, this.state)
     if (!deepEqual(nextProps.experiments, this.props.experiments)) {
-      this.setState({ __experiments: nextProps.experiments, __mergedExperiments: deepmerge(this.state.__fallback, nextProps.experiments) }, this.publish);
+      newState.__experiments = nextProps.experiments
     }
     if (!deepEqual(nextProps.fallback, this.props.fallback)) {
-      this.setState({ __fallback: nextProps.fallback, __mergedExperiments: deepmerge(nextProps.fallback, this.state.__experiments) }, this.publish);
+      newState.__fallback = nextProps.fallback
     }
     if (nextProps.debug !== this.props.debug) {
-      this.setState({ __debug: nextProps.debug }, this.publish);
+      newState.__debug = nextProps.debug
+    }
+    newState.__mergedExperiments = deepmerge(newState.__fallback, newState.__experiments)
+    if(!deepEqual(newState.__experiments, this.state.__experiments) ||
+      !deepEqual(newState.__fallback, this.state.__fallback) ||
+      !deepEqual(newState.__mergedExperiments, this.state.__mergedExperiments) ||
+      newState.__debug !== this.state.__debug) {
+      this.setState(newState, this.publish);
     }
   }
 

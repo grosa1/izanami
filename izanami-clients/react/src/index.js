@@ -83,9 +83,9 @@ export class IzanamiProvider extends Component {
       Api.register(id, this.onDataLoaded);
       this.setState({loading: true});
       Api.izanamiReload(id, this.props.fetchHeaders).finally(() => {
-        this.setState({
-          isFetchPending: false
-        })
+          this.setState({
+            isFetchPending: false
+          })
       })
     }
   }

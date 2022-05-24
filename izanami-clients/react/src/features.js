@@ -229,17 +229,27 @@ export class FeatureProvider extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const newState = Object.assign({}, this.state)
     if (!deepEqual(nextProps.features, this.props.features)) {
-      this.setState({ __features: nextProps.features, __mergedFeatures: deepmerge(this.state.__fallback, nextProps.features) }, this.publish);
+      newState.__features = nextProps.features
     }
     if (!deepEqual(nextProps.fallback, this.props.fallback)) {
-      this.setState({ __fallback: nextProps.fallback, __mergedFeatures: deepmerge(nextProps.fallback, this.state.__features) }, this.publish);
+      newState.__fallback = nextProps.fallback
     }
     if (nextProps.debug !== this.props.debug) {
-      this.setState({ __debug: nextProps.debug }, this.publish);
+      newState.__debug = nextProps.debug
     }
     if (nextProps.isFetchPending !== this.props.isFetchPending) {
-      this.setState({ __isFetchPending: nextProps.isFetchPending }, this.publish);
+      newState.__isFetchPending = nextProps.isFetchPending
+    }
+    newState.__mergedFeatures = deepmerge(newState.__fallback, newState.__features)
+    if (!deepEqual(newState.__features, this.state.__features) ||
+      !deepEqual(newState.__fallback, this.state.__fallback) ||
+      !deepEqual(newState.__mergedFeatures, this.state.__mergedFeatures) ||
+      newState.__debug !== this.state.__debug ||
+      newState.__isFetchPending !== this.state.__isFetchPending
+    ) {
+      this.setState(newState, this.publish)
     }
   }
 
